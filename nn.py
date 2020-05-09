@@ -32,7 +32,7 @@ class nn():
         a_1 = np.vstack((a_1,(np.ones((1,a_1.shape[1])))))
         b_2 = self.sigmoid(Theta2.dot(a_1))
         return 1       
-
+        
     def sigmoid(self,z):
         return (1/(1 + np.exp(-z)))
 
