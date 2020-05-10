@@ -29,10 +29,13 @@ class nn():
         m = X.shape[0]
         X = np.column_stack((np.ones((m,1)),X))
         a_1 = self.sigmoid(Theta1.dot(X.T))
-        a_1 = np.vstack((a_1,(np.ones((1,a_1.shape[1])))))
-        b_2 = self.sigmoid(Theta2.dot(a_1))
-        return 1       
+        a_1 = np.vstack(((np.ones((1,a_1.shape[1]))),a_1))
+        a_2 = self.sigmoid(Theta2.dot(a_1))
         
+        left = sum(sum(-y.T * np.log(a_2)))
+        right = sum(sum((1-y).T * np.log(1 - a_2)))
+        return 1/m * (left -right)       
+
     def sigmoid(self,z):
         return (1/(1 + np.exp(-z)))
 
@@ -40,6 +43,13 @@ neuralNet = nn('train-images-idx3-ubyte','train-labels-idx1-ubyte')
 X,y,Theta1,Theta2 = neuralNet.load_matlab_data()
 # X,y = neuralNet.load_data()
 #Display random image of digits
+i = 0
+y_matrix = np.zeros((len(y),10))
+for i in range(len(y)):
+    if y[i,0] == 10:
+        y[i,0] = 0
+    y_matrix[i] = np.eye(1,10,k=y[i,0],dtype='int')
+
 fig=plt.figure(figsize=(5, 5))
 columns = 4
 rows = 5
@@ -50,3 +60,6 @@ for i in range(1, columns*rows +1):
     fig.add_subplot(rows, columns,i)
     plt.imshow(pixel,cmap = 'gray')
 plt.show()
+
+cost = neuralNet.cost_grad(X,y_matrix,Theta1,Theta2)
+print(cost) 
