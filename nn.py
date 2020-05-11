@@ -44,10 +44,18 @@ class nn():
 
         cost_regu = (_lambda/(2*m)) * (cost_regu_1 +cost_regu_2)
         J = J + cost_regu
+
+        # Backpropagation
+        
+
         return  J      
 
     def sigmoid(self,z):
-        return (1/(1 + np.exp(-z)))
+        return (1./(1. + np.exp(-z)))
+    
+    #sigmoidGradient
+    def sigmoidGradient(self,z):
+        return (1./(1. + np.exp(-z))) * (1 - (1./(1. + np.exp(-z))))
 
 neuralNet = nn('train-images-idx3-ubyte','train-labels-idx1-ubyte')
 X,y,Theta1,Theta2 = neuralNet.load_matlab_data()
@@ -70,4 +78,6 @@ for i in range(1, columns*rows +1):
 plt.show()
 
 cost = neuralNet.cost_grad(X,y_matrix,Theta1,Theta2,1)
+val = neuralNet.sigmoidGradient(np.array([-1, -0.5, 0, 0.5, 1]))
 print(cost) 
+print(val)
