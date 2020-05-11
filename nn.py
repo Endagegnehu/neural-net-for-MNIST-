@@ -44,12 +44,10 @@ X,y,Theta1,Theta2 = neuralNet.load_matlab_data()
 # X,y = neuralNet.load_data()
 #Display random image of digits
 i = 0
-y_matrix = np.zeros((len(y),10))
+y_matrix = np.zeros((len(y),11))
 for i in range(len(y)):
-    if y[i,0] == 10:
-        y[i,0] = 0
-    y_matrix[i] = np.eye(1,10,k=y[i,0],dtype='int')
-
+    y_matrix[i] = np.eye(1,11,k=y[i,0],dtype='int')
+y_matrix = np.delete(y_matrix,0,1)
 fig=plt.figure(figsize=(5, 5))
 columns = 4
 rows = 5
