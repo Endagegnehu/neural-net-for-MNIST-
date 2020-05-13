@@ -31,22 +31,33 @@ class nn():
         a_1 = self.sigmoid(Theta1.dot(X.T))
         a_1 = np.vstack(((np.ones((1,a_1.shape[1]))),a_1))
         a_2 = self.sigmoid(Theta2.dot(a_1))
-        return a_2
+        return a_2,a_1,X
 
     def cost_grad(self,X,y,Theta1,Theta2,_lambda):
         m = X.shape[0]
-        a_2 = self.forwardProp(X,y,Theta1,Theta2,_lambda)
+        a_2,a_1,X = self.forwardProp(X,y,Theta1,Theta2,_lambda)
         left = sum(sum(-y.T * np.log(a_2)))
         right = sum(sum((1-y).T * np.log(1 - a_2)))
+        
         # Cost with out regularization 
         J = 1/m * (left -right)
+        
         # Cost with regularization
         cost_regu_1 = np.sum(Theta1[1:]**2)
         cost_regu_2 = np.sum(Theta2[1:]**2)
         cost_regu = (_lambda/(2*m)) * (cost_regu_1 +cost_regu_2)
         J = J + cost_regu
-        # Backpropagation
-        
+
+        # Backpropagation with out regularization 
+        delta_3 = a_2 - y.T
+        delta_2_ = Theta2.T.dot(delta_3) * a_1 * (1-a_1)
+        delta_2 = np.delete(delta_2_,0,0)
+
+        Delta_1 = delta_2.dot(X)
+        Delta_2 = delta_3.dot(a_1.T) 
+
+        Theta1_grad = Delta_1/m
+        Theta2_grad = Delta_2/m 
 
         return  J      
 
