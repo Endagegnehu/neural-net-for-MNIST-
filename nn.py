@@ -5,6 +5,7 @@ from PIL import Image
 from mlxtend.data import loadlocal_mnist
 from matplotlib import pyplot as plt
 import scipy.io
+import scipy.optimize as optmz
 
 class nn():
     def __init__(self, image_path,labels_path):
@@ -67,7 +68,29 @@ class nn():
         Theta1_grad = Theta1_grad.reshape(10025)
         Theta2_grad = Theta2_grad.reshape(260)
         grad =  np.append(Theta1_grad,Theta2_grad)
-        return  J, grad      
+        return  J, grad   
+    def grad_func(self,X,y,Theta1,Theta2,_lambda):
+        m = X.shape[0]
+        a_2,a_1,X = self.forwardProp(X,y,Theta1,Theta2,_lambda)
+        # Backpropagation without regularization 
+        delta_3 = a_2 - y.T
+        delta_2_ = Theta2.T.dot(delta_3) * a_1 * (1-a_1)
+        delta_2 = np.delete(delta_2_,0,0)
+
+        Delta_1 = delta_2.dot(X)
+        Delta_2 = delta_3.dot(a_1.T) 
+
+        Theta1_grad = Delta_1/m
+        Theta2_grad = Delta_2/m 
+
+        # Backpropagation with regularization
+        Theta1_grad[1:] = Theta1_grad[1:] + (_lambda/m) * Theta1[1:]
+        Theta2_grad[1:] = Theta2_grad[1:] + (_lambda/m) * Theta2[1:]
+        Theta1_grad = Theta1_grad.reshape(10025)
+        Theta2_grad = Theta2_grad.reshape(260)
+        grad =  np.append(Theta1_grad,Theta2_grad)
+
+        return grad
 
     def sigmoid(self,z):
         return (1./(1. + np.exp(-z)))
@@ -102,9 +125,23 @@ for i in range(1, columns*rows +1):
     plt.imshow(pixel,cmap = 'gray')
 plt.show()
 
+# parameters
+input_layer_size  = 400;  # 20x20 Input Images of Digits
+hidden_layer_size = 25;   # 25 hidden units
+num_labels = 10;          # 10 labels, from 1 to 10   
+
 cost = neuralNet.cost_grad(X,y_matrix,Theta1,Theta2,1)
 val = neuralNet.sigmoidGradient(np.array([-1, -0.5, 0, 0.5, 1]))
-# x0 = int_theta_opt
-# theta = optmz.fmin_bfgs(cost, x0, fprime = grad_func, args =myargs )
-print(cost) 
+
+#Random Initialize Weights
+intial_theta1 = neuralNet.randInitializeWeights(input_layer_size,hidden_layer_size)
+intial_theta2 = neuralNet.randInitializeWeights(hidden_layer_size,num_labels)
+
+initial_nn_params = np.append(intial_theta1.reshape(10025),intial_theta2.reshape(260))
+
+x0 = initial_nn_params
+myargs = (X,y_matrix)
+lambda_ = 0.1
+theta = optmz.fmin_bfgs(neuralNet.cost_grad(X,y_matrix,intial_theta1,intial_theta2,lambda_), x0, fprime = neuralNet.grad_func, args =myargs, epsilon=lambda_,maxiter=500)
+print(theta) 
 print(val)
