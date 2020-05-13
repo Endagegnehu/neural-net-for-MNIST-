@@ -1,3 +1,5 @@
+### Science is a differential equation. Religion is a boundary condition. — Alan Turing
+
 import numpy as np
 from PIL import Image
 from mlxtend.data import loadlocal_mnist
@@ -73,6 +75,12 @@ class nn():
     #sigmoidGradient
     def sigmoidGradient(self,z):
         return (1./(1. + np.exp(-z))) * (1 - (1./(1. + np.exp(-z))))
+    
+    #Random Initialize Weights
+    def randInitializeWeights(self,L_in,L_out):
+        epsilon = 0.12
+        w = np.random.uniform(0,1,(L_out, 1 + L_in)) * 2 * epsilon - epsilon
+        return w
 
 neuralNet = nn('train-images-idx3-ubyte','train-labels-idx1-ubyte')
 X,y,Theta1,Theta2 = neuralNet.load_matlab_data()
@@ -96,5 +104,7 @@ plt.show()
 
 cost = neuralNet.cost_grad(X,y_matrix,Theta1,Theta2,1)
 val = neuralNet.sigmoidGradient(np.array([-1, -0.5, 0, 0.5, 1]))
+# x0 = int_theta_opt
+# theta = optmz.fmin_bfgs(cost, x0, fprime = grad_func, args =myargs )
 print(cost) 
 print(val)
