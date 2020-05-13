@@ -48,7 +48,7 @@ class nn():
         cost_regu = (_lambda/(2*m)) * (cost_regu_1 +cost_regu_2)
         J = J + cost_regu
 
-        # Backpropagation with out regularization 
+        # Backpropagation without regularization 
         delta_3 = a_2 - y.T
         delta_2_ = Theta2.T.dot(delta_3) * a_1 * (1-a_1)
         delta_2 = np.delete(delta_2_,0,0)
@@ -59,7 +59,13 @@ class nn():
         Theta1_grad = Delta_1/m
         Theta2_grad = Delta_2/m 
 
-        return  J      
+        # Backpropagation with regularization
+        Theta1_grad[1:] = Theta1_grad[1:] + (_lambda/m) * Theta1[1:]
+        Theta2_grad[1:] = Theta2_grad[1:] + (_lambda/m) * Theta2[1:]
+        Theta1_grad = Theta1_grad.reshape(10025)
+        Theta2_grad = Theta2_grad.reshape(260)
+        grad =  np.append(Theta1_grad,Theta2_grad)
+        return  J, grad      
 
     def sigmoid(self,z):
         return (1./(1. + np.exp(-z)))
