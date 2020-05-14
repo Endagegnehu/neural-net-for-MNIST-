@@ -140,8 +140,8 @@ intial_theta2 = neuralNet.randInitializeWeights(hidden_layer_size,num_labels)
 initial_nn_params = np.append(intial_theta1.reshape(10025),intial_theta2.reshape(260))
 
 x0 = initial_nn_params
-myargs = (X,y_matrix)
+myargs = ((X),(y_matrix))
 lambda_ = 0.1
-theta = optmz.fmin_bfgs(neuralNet.cost_grad(X,y_matrix,intial_theta1,intial_theta2,lambda_), x0, fprime = neuralNet.grad_func, args =myargs, epsilon=lambda_,maxiter=500)
+theta = optmz.fmin_bfgs(neuralNet.cost_grad(X,y_matrix,intial_theta1,intial_theta2,lambda_), x0, fprime = neuralNet.grad_func(X,y_matrix,intial_theta1,intial_theta2,lambda_), epsilon=lambda_,maxiter=500)
 print(theta) 
 print(val)
